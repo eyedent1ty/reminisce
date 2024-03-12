@@ -8,16 +8,20 @@
       :id="node.id"
       :value="node.value"
       :isActive="node.isActive"
+      :isDone="node.isDone"
       @flip="handleFlipNode"
     />
   </div>
 </template>
 
 <script setup lang="ts">
+import { shuffleArray } from '~/scripts/utils';
+
 interface NodeInterface {
   id: number;
   value: number;
   isActive: boolean;
+  isDone: boolean;
 }
 
 class Node implements NodeInterface {
@@ -25,11 +29,13 @@ class Node implements NodeInterface {
   private _id: number;
   private _value: number;
   private _isActive: boolean;
+  private _isDone: boolean;
 
   constructor(value: number) {
     this._id = Node.id++;
     this._value = value;
     this._isActive = false;
+    this._isDone = false;
   }
 
   get id(): number {
@@ -47,6 +53,14 @@ class Node implements NodeInterface {
   set isActive(newValue: boolean) {
     this._isActive = newValue;
   }
+
+  get isDone(): boolean {
+    return this._isDone;
+  }
+
+  set isDone(newValue: boolean) {
+    this._isDone = newValue;
+  }
 }
 
 // DEFAULT NUMBER OF NODES
@@ -63,23 +77,7 @@ for (let i = 0; i < size / 2; i++) {
   nodes.value.push(new Node(i + 1));
 }
 
-// A function used to shuffle nodes
-const shuffleNodes = (nodes: NodeInterface[]): NodeInterface[] => {
-  const nodesCopy = [...nodes];
-  const len = nodesCopy.length;
-
-  for (let i = 0; i < len; i++) {
-    const randomIndex = Math.floor(Math.random() * (len - i) + i);
-    const temp = nodesCopy[randomIndex];
-    const currentNode = nodesCopy[i];
-    nodesCopy[randomIndex] = currentNode;
-    nodesCopy[i] = temp;
-  }
-
-  return nodesCopy;
-};
-
-nodes.value = shuffleNodes(nodes.value);
+nodes.value = shuffleArray(nodes.value);
 
 // A function used to get specific node by the node's id
 const getNodeById = (
@@ -89,15 +87,31 @@ const getNodeById = (
   return nodes.find((node) => node.id === id);
 };
 
-const resetActiveNodes = () => {
-  if (!previousFlippedNode.value || !currentFlippedNode.value) return;
-
-  previousFlippedNode.value.isActive = false;
-  currentFlippedNode.value.isActive = false;
+// Reset the nodes and the value of previous and current flipped nodes
+const resetActiveNodes = (): void => {
   previousFlippedNode.value = null;
   currentFlippedNode.value = null;
 };
 
+const setActiveNodesStatus = (status: boolean): void => {
+  if (previousFlippedNode.value === null || currentFlippedNode.value === null) {
+    return;
+  }
+
+  previousFlippedNode.value.isActive = status;
+  currentFlippedNode.value.isActive = status;
+};
+
+const setActiveNodesAsDone = (): void => {
+  if (previousFlippedNode.value === null || currentFlippedNode.value === null) {
+    return;
+  }
+
+  previousFlippedNode.value.isDone = true;
+  currentFlippedNode.value.isDone = true;
+};
+
+// Check both previousFlippedNode and currentFlippedNode if their value is the same
 const isActiveNodesCorrect = (): boolean => {
   if (!previousFlippedNode.value || !currentFlippedNode.value) return false;
   return previousFlippedNode.value.value === currentFlippedNode.value.value;
@@ -111,13 +125,31 @@ const setNodeActive = (node: NodeInterface): NodeInterface | null => {
   node.isActive = true;
 
   if (currentFlippedNode.value !== null) {
-    previousFlippedNode.value = currentFlippedNode.value;
-  }
-  currentFlippedNode.value = node;
+    if (node === currentFlippedNode.value) {
+      return null;
+    }
 
+    previousFlippedNode.value = currentFlippedNode.value;
+    currentFlippedNode.value = node;
+
+    if (!isActiveNodesCorrect()) {
+      setTimeout(() => {
+        setActiveNodesStatus(false);
+        resetActiveNodes();
+      }, 1000);
+    } else {
+      setTimeout(() => {
+        setActiveNodesAsDone();
+        resetActiveNodes();
+      }, 500);
+    }
+  } else {
+    currentFlippedNode.value = node;
+  }
   return currentFlippedNode.value;
 };
 
+// Event listener when the node is flipped
 const handleFlipNode = (id: number) => {
   const selectedNode = getNodeById(nodes.value, id);
 
@@ -125,11 +157,15 @@ const handleFlipNode = (id: number) => {
   setNodeActive(selectedNode);
 };
 
-watch(previousFlippedNode, () => {
-  if (!isActiveNodesCorrect()) {
-    setTimeout(() => {
-      resetActiveNodes();
-    }, 1000);
-  }
-});
+const setStatusOfAllNodes = (status: boolean): void => {
+  nodes.value.forEach((node) => (node.isActive = status));
+};
+
+setTimeout(() => {
+  setStatusOfAllNodes(true);
+}, 500);
+
+setTimeout(() => {
+  setStatusOfAllNodes(false);
+}, 5000);
 </script>

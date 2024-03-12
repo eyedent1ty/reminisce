@@ -7,9 +7,10 @@
       'bg-primary': isActive,
       'cursor-pointer': !isActive,
       'bg-gray-700': !isActive,
+      'opacity-0': isDone
     }"
   >
-    <span :class="{ 'hidden': !isActive }">{{ value }}</span>
+    <span :class="{ hidden: !isActive }">{{ value }}</span>
   </div>
 </template>
 
@@ -26,8 +27,12 @@ defineProps({
   isActive: {
     type: Boolean,
     required: true
+  },
+  isDone: {
+    type: Boolean,
+    required: true
   }
 });
 
-defineEmits(['flip'])
+defineEmits(['flip']);
 </script>
