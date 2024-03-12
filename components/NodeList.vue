@@ -53,14 +53,17 @@ class Node implements NodeInterface {
 const size = 16;
 const nodes = ref<NodeInterface[]>([]);
 
+// Tracking of the current nodes that are active
 const previousFlippedNode = ref<null | NodeInterface>(null);
 const currentFlippedNode = ref<null | NodeInterface>(null);
 
+// Filling the array full of nodes with the given size
 for (let i = 0; i < size / 2; i++) {
   nodes.value.push(new Node(i + 1));
   nodes.value.push(new Node(i + 1));
 }
 
+// A function used to shuffle nodes
 const shuffleNodes = (nodes: NodeInterface[]): NodeInterface[] => {
   const nodesCopy = [...nodes];
   const len = nodesCopy.length;
@@ -78,6 +81,7 @@ const shuffleNodes = (nodes: NodeInterface[]): NodeInterface[] => {
 
 nodes.value = shuffleNodes(nodes.value);
 
+// A function used to get specific node by the node's id
 const getNodeById = (
   nodes: NodeInterface[],
   id: number
@@ -85,21 +89,47 @@ const getNodeById = (
   return nodes.find((node) => node.id === id);
 };
 
-const handleFlipNode = (id: number) => {
-  const selectedNode = getNodeById(nodes.value, id);
+const resetActiveNodes = () => {
+  if (!previousFlippedNode.value || !currentFlippedNode.value) return;
 
-  if (
-    selectedNode === undefined ||
-    (previousFlippedNode.value && currentFlippedNode.value)
-  )
-    return;
+  previousFlippedNode.value.isActive = false;
+  currentFlippedNode.value.isActive = false;
+  previousFlippedNode.value = null;
+  currentFlippedNode.value = null;
+};
 
-  selectedNode.isActive = true;
+const isActiveNodesCorrect = (): boolean => {
+  if (!previousFlippedNode.value || !currentFlippedNode.value) return false;
+  return previousFlippedNode.value.value === currentFlippedNode.value.value;
+};
+
+// A function used to set the node to active
+const setNodeActive = (node: NodeInterface): NodeInterface | null => {
+  if (previousFlippedNode.value !== null && currentFlippedNode.value !== null)
+    return null;
+
+  node.isActive = true;
 
   if (currentFlippedNode.value !== null) {
     previousFlippedNode.value = currentFlippedNode.value;
   }
+  currentFlippedNode.value = node;
 
-  currentFlippedNode.value = selectedNode;
+  return currentFlippedNode.value;
 };
+
+const handleFlipNode = (id: number) => {
+  const selectedNode = getNodeById(nodes.value, id);
+
+  if (selectedNode === undefined) return;
+  setNodeActive(selectedNode);
+};
+
+watch(previousFlippedNode, () => {
+  if (!isActiveNodesCorrect()) {
+    setTimeout(() => {
+      resetActiveNodes();
+    }, 1000);
+  }
+});
 </script>
