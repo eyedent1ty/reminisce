@@ -45,13 +45,16 @@ class Node implements NodeInterface {
   }
 
   set isActive(newValue: boolean) {
-    this._isActive = newValue; 
+    this._isActive = newValue;
   }
 }
 
 // DEFAULT NUMBER OF NODES
 const size = 16;
 const nodes = ref<NodeInterface[]>([]);
+
+const previousFlippedNode = ref<null | NodeInterface>(null);
+const currentFlippedNode = ref<null | NodeInterface>(null);
 
 for (let i = 0; i < size / 2; i++) {
   nodes.value.push(new Node(i + 1));
@@ -67,23 +70,36 @@ const shuffleNodes = (nodes: NodeInterface[]): NodeInterface[] => {
     const temp = nodesCopy[randomIndex];
     const currentNode = nodesCopy[i];
     nodesCopy[randomIndex] = currentNode;
-    nodesCopy[i] = temp; 
+    nodesCopy[i] = temp;
   }
 
-  return nodesCopy
+  return nodesCopy;
 };
 
 nodes.value = shuffleNodes(nodes.value);
 
-const getNodeById = (nodes: NodeInterface[], id: number): NodeInterface | undefined => {
+const getNodeById = (
+  nodes: NodeInterface[],
+  id: number
+): NodeInterface | undefined => {
   return nodes.find((node) => node.id === id);
-}
+};
 
 const handleFlipNode = (id: number) => {
   const selectedNode = getNodeById(nodes.value, id);
 
-  if (!selectedNode) return;
+  if (
+    selectedNode === undefined ||
+    (previousFlippedNode.value && currentFlippedNode.value)
+  )
+    return;
 
   selectedNode.isActive = true;
+
+  if (currentFlippedNode.value !== null) {
+    previousFlippedNode.value = currentFlippedNode.value;
+  }
+
+  currentFlippedNode.value = selectedNode;
 };
 </script>
