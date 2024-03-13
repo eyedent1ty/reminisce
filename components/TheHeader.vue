@@ -4,10 +4,7 @@
       <h1 class="text-3xl font-bold">reminisce</h1>
       <ul class="flex gap-5">
         <li class="flex items-center">
-          <button type="button" @click="modal = true">Restart</button>
-        </li>
-        <li class="flex items-center">
-          <button type="button">New Game</button>
+          <TheButton type="button" primary @click="openModal">Restart</TheButton>
         </li>
       </ul>
     </nav>
@@ -16,4 +13,8 @@
 
 <script setup lang="ts">
 const modal = useModal();
+
+const openModal = () => {
+  modal.value = true;
+};
 </script>

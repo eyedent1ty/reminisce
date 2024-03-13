@@ -2,7 +2,7 @@
   <button v-if="primary" :class="[{ 'bg-primary': primary }, computedClasses]">
     <slot />
   </button>
-  <button v-else :class="[{ 'bg-secondary': !primary }, computedClasses]">
+  <button v-else :class="[{ 'bg-gray-700': !primary }, computedClasses]">
     <slot />
   </button>
 </template>
@@ -15,5 +15,5 @@ defineProps({
   }
 });
 
-const computedClasses = computed(() => 'min-w-24 min-h-10 rounded font-bold');
+const computedClasses = computed(() => 'min-w-24 min-h-10 rounded font-bold text-white');
 </script>
