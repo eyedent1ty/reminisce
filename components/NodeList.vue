@@ -1,6 +1,6 @@
 <template>
   <div
-    class="grid grid-cols-4 gap-8 max-w-96 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
+    class="grid grid-cols-4 gap-8 max-w-96 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10"
   >
     <NodeComponent
       v-for="node in nodes"

@@ -1,8 +1,7 @@
 <template>
   <TheHeader />
   <TheTimer :time="time" />
-  <!-- <NodeList /> -->
-  <Modal />
+  <NodeList />
 </template>
 
 <script setup lang="ts">

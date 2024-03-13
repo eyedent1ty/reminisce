@@ -4,7 +4,7 @@
       <h1 class="text-3xl font-bold">reminisce</h1>
       <ul class="flex gap-5">
         <li class="flex items-center">
-          <button type="button">Restart</button>
+          <button type="button" @click="modal = true">Restart</button>
         </li>
         <li class="flex items-center">
           <button type="button">New Game</button>
@@ -13,3 +13,7 @@
     </nav>
   </header>
 </template>
+
+<script setup lang="ts">
+const modal = useModal();
+</script>
