@@ -7,9 +7,13 @@
 <script setup lang="ts">
 const time = useTimer();
 const isGameFinished = useGame();
+const reset = useReset();
+const start = useStart();
 
-onMounted(() => {
-  let decrement: any;
+let decrement: any;
+let increment: any;
+
+const startTimer = () => {
   setTimeout(() => {
     decrement = setInterval(() => {
       time.value--;
@@ -18,10 +22,11 @@ onMounted(() => {
 
   setTimeout(() => {
     clearInterval(decrement);
+    start.value = true;
   }, 6000);
 
   setTimeout(() => {
-    const increment = setInterval(() => {
+    increment = setInterval(() => {
       time.value++;
     }, 1000);
 
@@ -31,5 +36,19 @@ onMounted(() => {
       }
     });
   }, 5500);
+};
+
+watchEffect(() => {
+  if (reset.value) {
+    time.value = 5;
+    clearInterval(increment);
+    clearInterval(decrement);
+
+    start.value = false;
+
+    startTimer();
+  }
 });
+
+startTimer();
 </script>

@@ -6,7 +6,7 @@
         <main class="py-4">Are you sure you want to restart the game?</main>
         <footer class="flex justify-end gap-2">
           <TheButton @click="closeModal">Cancel</TheButton>
-          <TheButton primary>Confirm</TheButton>
+          <TheButton primary @click="confirmModal">Confirm</TheButton>
         </footer>
       </div>
       <div
@@ -20,9 +20,15 @@
 
 <script setup lang="ts">
 const modal = useModal();
+const reset = useReset();
 
 const closeModal = () => {
   modal.value = false;
+};
+
+const confirmModal = () => {
+  reset.value = true;
+  closeModal();
 };
 </script>
 

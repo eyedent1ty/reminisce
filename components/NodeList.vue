@@ -14,7 +14,10 @@
 
     <h3 v-else class="animate-bounce text-center">
       <span class="block text-3xl font-bold">Congratulations!</span>
-      <span class="text-xl">You finished the game with a time of <span class="underline">{{ timer }}</span> seconds</span>
+      <span class="text-xl"
+        >You finished the game with a time of
+        <span class="underline">{{ timer }}</span> seconds</span
+      >
     </h3>
   </div>
 </template>
@@ -164,8 +167,11 @@ const handleFlipNode = (id: number) => {
   setNodeActive(selectedNode);
 };
 
-const setStatusOfAllNodes = (status: boolean): void => {
-  nodes.value.forEach((node) => (node.isActive = status));
+const setStatusOfAllNodes = (
+  status: boolean,
+  prop: 'isActive' | 'isDone' = 'isActive'
+): void => {
+  nodes.value.forEach((node) => (node[prop] = status));
 };
 
 setTimeout(() => {
@@ -183,6 +189,26 @@ const isAllNodesDone = () => {
 watchEffect(() => {
   if (isAllNodesDone()) {
     isGameFinished.value = true;
+  }
+});
+
+const reset = useReset();
+
+watchEffect(() => {
+  console.log(reset.value);
+  if (reset.value) {
+    setStatusOfAllNodes(false, 'isActive');
+    setStatusOfAllNodes(false, 'isDone');
+
+    setTimeout(() => {
+      setStatusOfAllNodes(true);
+    }, 500);
+
+    setTimeout(() => {
+      setStatusOfAllNodes(false);
+    }, 5000);
+
+    reset.value = false;
   }
 });
 </script>
