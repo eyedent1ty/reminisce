@@ -1,5 +1,5 @@
 <template>
-  <h3 class="text-center text-3xl">
+  <h3 class="text-center text-3xl" v-if="!isGameFinished">
     <span v-if="time">{{ time }}</span> 
     <span v-else>GO!</span>
 
@@ -13,4 +13,6 @@ defineProps({
     required: true
   }
 });
+
+const isGameFinished = useGame();
 </script>

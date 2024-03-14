@@ -5,7 +5,8 @@
 </template>
 
 <script setup lang="ts">
-const time = ref(5);
+const time = useTimer();
+const isGameFinished = useGame();
 
 onMounted(() => {
   let decrement: any;
@@ -20,9 +21,15 @@ onMounted(() => {
   }, 6000);
 
   setTimeout(() => {
-    setInterval(() => {
+    const increment = setInterval(() => {
       time.value++;
     }, 1000);
+
+    watchEffect(() => {
+      if (isGameFinished.value) {
+        clearInterval(increment);
+      }
+    });
   }, 5500);
 });
 </script>

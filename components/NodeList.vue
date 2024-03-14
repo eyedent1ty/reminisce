@@ -1,16 +1,21 @@
 <template>
-  <div
-    class="grid grid-cols-4 gap-8 max-w-96 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-  >
-    <NodeComponent
-      v-for="node in nodes"
-      :key="node.id"
-      :id="node.id"
-      :value="node.value"
-      :isActive="node.isActive"
-      :isDone="node.isDone"
-      @flip="handleFlipNode"
-    />
+  <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+    <div v-if="!isGameFinished" class="grid grid-cols-4 gap-8 max-w-96">
+      <NodeComponent
+        v-for="node in nodes"
+        :key="node.id"
+        :id="node.id"
+        :value="node.value"
+        :isActive="node.isActive"
+        :isDone="node.isDone"
+        @flip="handleFlipNode"
+      />
+    </div>
+
+    <h3 v-else class="animate-bounce text-center">
+      <span class="block text-3xl font-bold">Congratulations!</span>
+      <span class="text-xl">You finished the game with a time of <span class="underline">{{ timer }}</span> seconds</span>
+    </h3>
   </div>
 </template>
 
@@ -66,6 +71,8 @@ class Node implements NodeInterface {
 // DEFAULT NUMBER OF NODES
 const size = 16;
 const nodes = ref<NodeInterface[]>([]);
+const isGameFinished = useGame();
+const timer = useTimer();
 
 // Tracking of the current nodes that are active
 const previousFlippedNode = ref<null | NodeInterface>(null);
@@ -168,4 +175,14 @@ setTimeout(() => {
 setTimeout(() => {
   setStatusOfAllNodes(false);
 }, 5000);
+
+const isAllNodesDone = () => {
+  return nodes.value.every((node) => node.isDone);
+};
+
+watchEffect(() => {
+  if (isAllNodesDone()) {
+    isGameFinished.value = true;
+  }
+});
 </script>
