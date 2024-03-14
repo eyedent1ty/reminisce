@@ -1,7 +1,7 @@
 <template>
   <div
     @click="$emit('flip', id)"
-    class="flex justify-center items-center rounded-full text-white text-4xl font-bold w-20 h-20 transition-all"
+    class="flex justify-center items-center rounded-full text-white text-xl md:text-4xl font-bold w-10 h-10 xs:w-14 xs:h-14 sm:w-20 sm:h-20 transition-all"
     :class="{
       'scale-x-[-1]': !isActive,
       'bg-primary': isActive,
